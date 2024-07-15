@@ -46,7 +46,7 @@ odoo.define('pos_no_negative_stock.productScreen', function(require) {
                                 call_super = false;
                                 let warning = 'Producto (' + prd.display_name + ') fuera de Inventario!';
                                 self.showPopup('ErrorPopup', {
-                                    title: self.env._t('Producto Sin Stock en esta Ubicación, Favor Validar su Inventario.'),
+                                    title: self.env._t('Producto Sin Stock en esta Ubicación, Favor Validar su Inventario'),
                                     body: self.env._t(warning),
                                 });
                             }
