@@ -37,16 +37,16 @@ odoo.define('pos_no_negative_stock.productScreen', function(require) {
                         if (prd.type == 'product') {
                             if (prd.qty_available <= 0) {
                                 call_super = false;
-                                let warning = 'Product (' + prd.display_name + ') is out of stock!';
+                                let warning = 'Producto (' + prd.display_name + ') fuera de Inventario!';
                                 self.showPopup('ErrorPopup', {
                                     title: self.env._t('\n' + 'Cantidad cero no permitida'),
                                     body: self.env._t(warning),
                                 });
                             } else if (line.quantity > quantities[i]) {
                                 call_super = false;
-                                let warning = 'Product (' + prd.display_name + ') Fuera de Inventario!';
+                                let warning = 'Producto (' + prd.display_name + ') fuera de Inventario!';
                                 self.showPopup('ErrorPopup', {
-                                    title: self.env._t('Producto Sin Stock en está Ubicación, Favor Validar su Inventario'),
+                                    title: self.env._t('Producto Sin Stock en esta Ubicación, Favor Validar su Inventario'),
                                     body: self.env._t(warning),
                                 });
                             }
@@ -64,3 +64,4 @@ odoo.define('pos_no_negative_stock.productScreen', function(require) {
 
     return ProductScreen;
 });
+
