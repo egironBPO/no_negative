@@ -22,38 +22,27 @@ odoo.define('pos_no_negative_stock.productScreen', function(require) {
                 let quantities = [];
 
                 if (pos_config.restrict_zero_qty) {
-                    for (let i = 0; i < lines.length; i++) {
-                        let prod = lines[i].product;
-                        const response = await rpc.query({
+                    let rpcCalls = lines.map(line => {
+                        return rpc.query({
                             model: 'pos.session',
                             method: 'get_product_qty_of_location',
-                            args: [prod.id, config_id]
-                        }).then(function(res) {
-                            return res;
+                            args: [line.product.id, config_id]
                         });
-                        quantities.push(response);
-                    }
+                    });
 
-                    $.each(lines, function(i, line) {
+                    quantities = await Promise.all(rpcCalls);
+
+                    lines.forEach((line, i) => {
                         let prd = line.product;
                         if (prd.type == 'product') {
-                            if (prd.id in prod_used_qty) {
-                                let old_qty = prod_used_qty[prd.id][1];
-                                prod_used_qty[prd.id] = [prd.qty_available, line.quantity + old_qty];
-                            } else {
-                                prod_used_qty[prd.id] = [prd.qty_available, line.quantity];
-                            }
-                        }
-                        let counter = 0;
-                        if (prd.qty_available <= 0) {
-                            call_super = false;
-                            let warning = 'Product (' + prd.display_name + ') is out of stock!';
-                            self.showPopup('ErrorPopup', {
-                                title: self.env._t('\n' + 'Cantidad cero no permitida'),
-                                body: self.env._t(warning),
-                            });
-                        } else {
-                            if (line.quantity > quantities[counter]) {
+                            if (prd.qty_available <= 0) {
+                                call_super = false;
+                                let warning = 'Product (' + prd.display_name + ') is out of stock!';
+                                self.showPopup('ErrorPopup', {
+                                    title: self.env._t('\n' + 'Cantidad cero no permitida'),
+                                    body: self.env._t(warning),
+                                });
+                            } else if (line.quantity > quantities[i]) {
                                 call_super = false;
                                 let warning = 'Product (' + prd.display_name + ') Fuera de Inventario!';
                                 self.showPopup('ErrorPopup', {
@@ -62,7 +51,6 @@ odoo.define('pos_no_negative_stock.productScreen', function(require) {
                                 });
                             }
                         }
-                        counter += 1;
                     });
                 }
 
